@@ -15,6 +15,10 @@ app.listen(PORT, (err) => {
 })
 
 
+app.get('/api/contact', (req, res) => {
+    return res.send('api web contact')
+})
+
 // CREATED DATA
 
 app.post('/api/contact-create', (req, res) => {
@@ -43,9 +47,22 @@ app.put('/api/contact-update/:id', (req, res) => {
         
         // eror handling
         if (err) {
-            return res.status(500).json({status_code: 500, msg: "Failed Find Data", err: err})
+            return res.status(500).json({status_code: 500, msg: err})
         }
-        console.log(rows);
+        // query update data
+        if (rows.length) {
+            db.query(queryUpdate, [data, req.params.id], (err, rows, field) => {
+                if (err) {
+                    return res.status(500).json({status_code:500, msg: 'Failed Update Data', err:err})
+                }
+                res.status(200).json({status_code: 200, msg: "Success Update Data", row: rows})
+            })
+        }else{
+            return res.status(404).json({status_code: 404, msg: `Data ${req.params.id} Not Found`})
+        }
     })
-
 })
+
+// FIND DATA
+
+// app.get('/')
